@@ -1,15 +1,11 @@
+import { getAllEvents } from "../../helpers/utils";
 import { useRouter } from "next/router";
-import { getEventById } from "../../dummy-data";
-const EventDetail = () => {
-  const router = useRouter();
-  const { eventId } = router.query;
-  const event = getEventById(eventId);
-  // const { title, description, date, image, isFeatured, location } = event;
 
-  if (!event) {
-    return <h1>Not Found</h1>;
+const EventDetail = ({ event }) => {
+  const { isFallback } = useRouter();
+  if (isFallback) {
+    return <p>Loading...</p>;
   }
-
   return (
     <>
       <h1 className="text-4xl font-bold">
@@ -40,3 +36,39 @@ const EventDetail = () => {
 };
 
 export default EventDetail;
+
+export const getStaticPaths = async () => {
+  const manipulateEvents = await getAllEvents();
+  const featuredEvents = manipulateEvents.filter(
+    (event) => event.isFeatured == true
+  );
+  const paths = featuredEvents.map((event) => ({
+    params: { eventId: event.id.toString() },
+  }));
+  return {
+    paths,
+    fallback: true,
+  };
+};
+
+export const getStaticProps = async (context) => {
+  const { eventId } = context.params;
+  const manipulateEvents = await getAllEvents();
+
+  const event = manipulateEvents.find(
+    (event) => event.id.toString() === eventId.toString()
+  );
+
+  if (!event) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      event,
+    },
+    revalidate: 30,
+  };
+};

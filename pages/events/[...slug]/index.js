@@ -1,33 +1,57 @@
+import EventList from "../../../components/events/Event-List.component";
+import { getFilteredEvents } from "../../../helpers/utils";
 import { useRouter } from "next/router";
 import ErrorAlert from "../../../components/error_alert/Error-Alert.component";
-import EventList from "../../../components/events/Event-List.component";
-import { getFilteredEvents } from "../../../dummy-data";
+import useSWR from "swr";
+import { useEffect, useState } from "react";
 const FilteredEvents = () => {
+  const [events, setEvents] = useState(null);
   const router = useRouter();
-  const filteredData = router.query.slug;
-  if (!filteredData) {
+  const slug = router.query.slug;
+  const { data, error } = useSWR(
+    "https://nextjs-learning-ea34e-default-rtdb.firebaseio.com/events.json"
+  );
+
+  useEffect(() => {
+    if (data) {
+      let manipulateData = [];
+      for (const key in data) {
+        manipulateData.push({ id: key, ...data[key] });
+      }
+      setEvents(manipulateData);
+    }
+  }, [data]);
+
+  if (!events || !slug) {
     return <p>Loading...</p>;
   }
-  const filteredYear = filteredData[0];
-  const filteredMonth = filteredData[1];
+  const year = +slug[0];
+  const month = +slug[1];
 
-  const numYear = +filteredYear;
-  const numMonth = +filteredMonth;
   if (
-    isNaN(numYear) ||
-    isNaN(numMonth) ||
-    numYear > 2030 ||
-    numYear < 2020 ||
-    numMonth < 1 ||
-    numMonth > 12
+    isNaN(year) ||
+    isNaN(month) ||
+    error ||
+    year < 2020 ||
+    year > 2022 ||
+    month < 1 ||
+    month > 12
   ) {
-    return <ErrorAlert>Invalid filtered please adjust your values </ErrorAlert>;
+    return (
+      <ErrorAlert>
+        <p>Invalid filter, Please adjust your value</p>
+      </ErrorAlert>
+    );
+  }
+  const filteredEvents = getFilteredEvents(events, { year, month });
+  if (!filteredEvents || filteredEvents.length === 0) {
+    return (
+      <ErrorAlert>
+        <p>The event could not be Found.</p>
+      </ErrorAlert>
+    );
   }
 
-  const filteredEvents = getFilteredEvents({ year: numYear, month: numMonth });
-  if (!filteredEvents || filteredEvents.length === 0) {
-    return <ErrorAlert>No Events Found</ErrorAlert>;
-  }
   return (
     <div>
       <h1 className="text-4xl font-bold">
