@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import AddressSvg from "../icons/Address.component";
 import DateSvg from "../icons/Date.component";
-import ArrowRightSvg from "../icons/ArrowRightSvg.component";
+import Image from "next/image";
 const EventItem = (props) => {
   const { title, image, date, location, id } = props.event;
   const readableDate = new Date(date).toLocaleDateString("en-US", {
@@ -15,13 +15,9 @@ const EventItem = (props) => {
   return (
     <li>
       <figure className="md:flex bg-gray-100 overflow-hidden rounded-xl p-8 md:p-0 my-5">
-        <img
-          className="w-32 h-32 md:w-64 md:h-auto md:rounded-none rounded-full mx-auto md:mx-0"
-          src={`/${image}`}
-          alt={title}
-          width="384"
-          height="512"
-        />
+        {/* <div className="flex md:inline-block justify-center items-center"> */}
+        <Image src={`/${image}`} alt={title} width={240} height={240} />
+        {/* </div> */}
         <div className="pt-6 md:p-8 text-center md:text-left space-y-4">
           <blockquote>
             <p className="text-lg font-semibold">{title}</p>

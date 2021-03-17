@@ -1,5 +1,7 @@
 import { getAllEvents } from "../../helpers/utils";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import Head from "next/head";
 
 const EventDetail = ({ event }) => {
   const { isFallback } = useRouter();
@@ -8,16 +10,20 @@ const EventDetail = ({ event }) => {
   }
   return (
     <>
+      <Head>
+        <title>{event.title}</title>
+        <meta name="description" content={`${event.description}`} />
+      </Head>
       <h1 className="text-4xl font-bold">
         Event <span className="text-gray-300 underline">Detail</span>
       </h1>
-      <figure className="md:flex bg-gray-100 rounded-xl p-8 md:p-0 my-5">
-        <img
-          className="w-32 h-32 md:w-48 md:h-auto md:rounded-none rounded-full mx-auto"
+      <figure className="md:flex bg-gray-100 overflow-hidden rounded-xl p-8 md:p-0 my-5">
+        <Image
+          // className="w-32 h-32 md:w-48 md:h-auto md:rounded-none rounded-full mx-auto"
           src={`/${event.image}`}
           alt=""
-          width="384"
-          height="512"
+          width={600}
+          height={400}
         />
         <div className="pt-6 md:p-8 text-center md:text-left space-y-4">
           <blockquote>

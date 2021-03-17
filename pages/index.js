@@ -2,6 +2,7 @@ import { getAllEvents } from "../helpers/utils";
 import { useEffect, useState } from "react";
 import useSwr from "swr";
 import EventList from "../components/events/Event-List.component";
+import Head from "next/head";
 
 const Home = ({ events: ssEvents }) => {
   const [events, setEvents] = useState(ssEvents);
@@ -34,6 +35,13 @@ const Home = ({ events: ssEvents }) => {
   const featuredEvents = events.filter((event) => event.isFeatured == true);
   return (
     <div>
+      <Head>
+        <title>NextJS Events</title>
+        <meta
+          name="description"
+          content="Find a lot of great events that allow you to evolve!"
+        />
+      </Head>
       <h1 className="text-4xl font-bold">
         Featured <span className="text-gray-300 underline">Events</span>
       </h1>
